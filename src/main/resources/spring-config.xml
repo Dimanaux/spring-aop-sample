@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <!-- USE AOP, automatically finds types with @Aspect -->
+    <aop:aspectj-autoproxy/>
+
+    <!-- LOGGING -->
+    <bean id="logger" class="app.aspects.Logger"/>
+
+    <!-- Authorization -->
+    <bean id="auth" class="app.aspects.Auth"/>
+
+    <!-- Cache -->
+    <bean id="dbCache" class="app.aspects.CacheDatabaseUsers"/>
+
+    <bean id="databaseConnectionConfiguration" class="app.db.util.DatabaseConnectionConfiguration">
+        <constructor-arg name="url" value="jdbc:postgresql://localhost:5432/spring_sample"/>
+        <constructor-arg name="username" value="postgres"/>
+        <constructor-arg name="password" value="postgres"/>
+    </bean>
+
+    <bean id="postgresDatabase" class="app.db.PostgresDatabase">
+        <constructor-arg name="configuration" ref="databaseConnectionConfiguration"/>
+    </bean>
+
+    <bean id="gson" class="com.google.gson.Gson"/>
+
+    <bean id="jsonView" class="app.views.JsonView">
+        <constructor-arg name="jsonFactory" ref="gson"/>
+    </bean>
+
+    <!-- Configuring via annotations -->
+    <context:annotation-config/>
+    <context:component-scan base-package="app"/>
+</beans>
